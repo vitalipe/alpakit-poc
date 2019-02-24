@@ -9,13 +9,13 @@
 ;; util
 (defn collect-kv-args [arg-list]
   "takes a seq of keyword args followed by n positional args
-and returns a map and a vector (positional args).
+   and returns a map and a vector (positional args).
 
-for example:
+     for example:
 
-[:x 42 :y false 1 2 3 4 5] => [{:x 42 :y false} [1 2 3 4 5]]
-[1 2 3 4 5]                => [{} [1 2 3 4 5]]
-[:x 42 :y false]           => [{:x 42 :y false} []]
+        [:x 42 :y false 1 2 3 4 5] => [{:x 42 :y false} [1 2 3 4 5]]
+        [1 2 3 4 5]                => [{} [1 2 3 4 5]]
+        [:x 42 :y false]           => [{:x 42 :y false} []]
 "
   (let [rest-index (loop [[arg & other] arg-list index 0]
                       (cond
