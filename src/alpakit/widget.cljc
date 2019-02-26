@@ -79,16 +79,16 @@
              (list 'fn ['& arg-list-sym]
                docstring
                ;; children
-               `(let [{:keys [~@prop-names]} (collect-kv-args-into-props ~arg-list-sym {} :children)]
+               `(let [{:keys [~@prop-names] :as ~(symbol "-props")} (collect-kv-args-into-props ~arg-list-sym {} :children)]
                   ~@body))
 
         no-state
              (list 'fn ['& arg-list-sym]
                docstring
                ;;  props & children
-               `(let [{:keys [~@prop-names]} (collect-kv-args-into-props ~arg-list-sym
-                                                                         ~prop-defaults
-                                                                         :children)]
+               `(let [{:keys [~@prop-names] :as ~(symbol "-props")} (collect-kv-args-into-props ~arg-list-sym
+                                                                                                ~prop-defaults
+                                                                                                :children)]
                   ;; FIXME: fix in cljs  TODO make nice errors
                   ;(doseq [[~(symbol "p") ~(symbol "spec-info")] ~prop-specs]
                     ;(spec/assert ~(symbol "spec-info") ~(symbol "p"))
@@ -99,7 +99,7 @@
              (list 'fn ['& arg-list-sym]
               docstring
                ;; children
-               `(let [{:keys [~@prop-names]} (collect-kv-args-into-props ~arg-list-sym {} :children)]
+               `(let [{:keys [~@prop-names] :as ~(symbol "-props")} (collect-kv-args-into-props ~arg-list-sym {} :children)]
                   ;; FIXME: fix in cljs TODO make nice errors
                   ;(doseq [[~(symbol "p") ~(symbol "spec-info")] ~prop-specs]
                     ;(spec/assert ~(symbol "spec-info") ~(symbol "p"))
@@ -111,9 +111,9 @@
              (list 'fn ['& arg-list-sym]
                docstring
                 ;; props & children
-               `(let [{:keys [~@prop-names]} (collect-kv-args-into-props ~arg-list-sym
-                                                                           ~prop-defaults
-                                                                           :children)]
+               `(let [{:keys [~@prop-names] :as ~(symbol "-props")} (collect-kv-args-into-props ~arg-list-sym
+                                                                                                ~prop-defaults
+                                                                                                :children)]
                   ;; FIXME: fix in cljs TODO make nice errors
                   ;(doseq [[~(symbol "p") ~(symbol "spec-info")] ~prop-specs]
                     ;(spec/assert ~(symbol "spec-info") ~(symbol "p"))
