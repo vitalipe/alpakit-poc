@@ -121,7 +121,7 @@
 
 (defcard-rg layout-with-autoflow
   "
-  children without an area key is auto filled.
+  children without an area key are inserted automatically.
 
   see `:auto-sizes` and `:auto-flow` for more options.
 
