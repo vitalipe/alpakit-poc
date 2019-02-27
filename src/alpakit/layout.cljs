@@ -127,4 +127,4 @@
             (map-indexed #(str ".alpakit-grid-" id "> *:nth-child(" (+ 2 %1) ") {grid-area: " (name %2) "}"))
             (join "\n"))]]
 
-       (map second grid-children))))
+       (into (mapv second grid-children) children))))

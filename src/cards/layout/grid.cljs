@@ -7,7 +7,7 @@
 (defn box [color text]
   [:div {:style {:background-color color}} text])
 
-(defcard-rg simple-grid
+(defcard-rg simple-grid-layout
   "
     to define nice looking grid layouts, simply add named `:areas` and provide `:rows` and `:cols`
   ```
@@ -32,7 +32,7 @@
                :B [box "gold" "B"]
                :C [box "pink" "C"]])
 
-(defcard-rg simple-inline-grid
+(defcard-rg simple-inline-grid-layout
   "
     it's also possible to define `:rows` and/or `:cols` inside `:areas`
   ```
@@ -74,7 +74,7 @@
                :menu    [box "pink" "menu"]
                :footer  [box "brown" "footer"]])
 
-(defcard-rg layout-with-holes
+(defcard-rg grid-layout-with-holes
   "
   set areas to `nil` to make great art!
   ```
@@ -99,7 +99,7 @@
                :footer  [box "brown" "footer"]])
 
 
-(defcard-rg layout-with-gaps
+(defcard-rg grid-layout-with-gaps
   "
   to add gaps between rows and cols use the `:gap` prop
   ```
@@ -117,3 +117,33 @@
                 :c2     [box "gold" "c2"]
                 :c0     [box "pink" "c0"]
                 :footer [box "grey" "footer"]])
+
+
+(defcard-rg layout-with-autoflow
+  "
+  children without an area key is auto filled.
+
+  see `:auto-sizes` and `:auto-flow` for more options.
+
+  ```
+   :areas [\"1fr\"     \"1fr\"      \"1fr\"
+           [:A        :B         :C ] \"40px\"
+           [:D        :E         :F ] \"60px\"]
+    :B [box ...]
+
+    [box \"gold\"  ...
+    [box \"pink\"  ...]
+    [box \"grey\"  ...]
+    [box \"brown\" ...]])
+
+  ```
+  "
+  [grid-layout  :areas ["1fr"     "1fr"      "1fr"
+                        [:A        :B         :C ] "40px"
+                        [:D        :E         :F ] "60px"]
+    :B [box "#0086b3"    "B"]
+
+    [box "gold"    "A (child 1 auto fill)"]
+    [box "pink"    "C (child 2 auto fill)"]
+    [box "grey"    "D (child 3 auto fill)"]
+    [box "brown"   "E (child 4 auto fill)"]])
