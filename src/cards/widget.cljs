@@ -3,32 +3,31 @@
     [devcards.core :refer-macros [defcard-rg]]
     [reagent.core :as r]
     [cljs.spec.alpha :as spec]
-    [alpakit.widget :refer-macros [widget]]))
+    [alpakit.widget :refer-macros [defwidget]]))
 
 
 
-(def demo-widget
-  (widget
-    "just a demo!"
+(defwidget demo-widget
+  "just a demo!"
 
-    :props
-      {label+ {:default "wat" :spec string?}
-       label- {:default "wat" :spec string?}}
+  :props
+    {label+ {:default "wat" :spec string?}
+     label- {:default "wat" :spec string?}}
 
-    :state
-      {count 0
-       open? false}
+  :state
+    {count 0
+     open? false}
 
-    [:div
-     [:button {:on-click #(swap! count inc)} label+]
-     [:label " " count " "]
-     [:button {:on-click #(swap! count dec)} label-]
-     [:div
-      [:button {:on-click #(swap! open? not)} (if open? "hide" "show") " children"]
-      (when open?
-        [:h4 "my children:"
-         (first children)
-         (last  children)])]]))
+  [:div
+   [:button {:on-click #(swap! count inc)} label+]
+   [:label " " count " "]
+   [:button {:on-click #(swap! count dec)} label-]
+   [:div
+    [:button {:on-click #(swap! open? not)} (if open? "hide" "show") " children"]
+    (when open?
+      [:h4 "my children:"
+       (first children)
+       (last  children)])]])
 
 
 (defn demo-raw [& {:keys [label- label+ children] :or {label- "wat" label+ "wat"}}]
@@ -49,8 +48,6 @@
          (first children)
          (last  children)])]]))
 
-
-(enable-console-print!)
 
 (defcard-rg widget-demo
   [demo-widget :label+ "++ alpaaaakaa!!!"

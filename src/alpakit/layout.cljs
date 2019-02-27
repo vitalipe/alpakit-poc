@@ -1,10 +1,11 @@
 (ns alpakit.layout
   (:require
     [clojure.string :refer [join]]
-    [alpakit.widget :refer-macros [widget]]
+    [alpakit.widget :refer-macros [defwidget]]
     [alpakit.props :as props]))
 
 
+;; util
 (defn- map-when [test effect coll]
   (map #(if (test %) (effect %) %)  coll))
 
@@ -75,55 +76,55 @@
   {:grid-auto-flow (name flow)})
 
 
+;; widgets
 
-(def grid-layout
-  (widget
-    "CSS grid layout"
-    :props {areas         {:default [] :spec vector?}
-            gap           {:default nil :spec [vector? | string?]}
-            place-items   {:default [:stretch :stretch] :spec #{:start :end :center :stretch}}
-            place-content {:default [:stretch :stretch] :spec #{:start :end :center :stretch
-                                                                :space-around :space-between :space-evenly}}
-            auto-sizes  {:default []   :spec vector?}
-            auto-flow   {:default :row :spec #{:row :column :dense}}
+(defwidget grid-layout
+  "CSS grid layout"
+  :props {areas         {:default [] :spec vector?}
+          gap           {:default nil :spec [vector? | string?]}
+          place-items   {:default [:stretch :stretch] :spec #{:start :end :center :stretch}}
+          place-content {:default [:stretch :stretch] :spec #{:start :end :center :stretch
+                                                              :space-around :space-between :space-evenly}}
+          auto-sizes  {:default []   :spec vector?}
+          auto-flow   {:default :row :spec #{:row :column :dense}}
 
-            rows        {:default nil :spec vector?}
-            cols        {:default nil :spec vector?}
+          rows        {:default nil :spec vector?}
+          cols        {:default nil :spec vector?}
 
-            -attr       {:default {} :spec props/html-attr-map}
-            -style      {:default {} :spec props/css-style-map}}
+          -attr       {:default {} :spec props/html-attr-map}
+          -style      {:default {} :spec props/css-style-map}}
 
-    :state {id (random-uuid)}
+  :state {id (random-uuid)}
 
-    (let [grid-styles (into {}
-                        (remove (comp nil? val)
-                          (merge {:display "grid"}
-                                 (areas->css areas)
-                                 (rows+cols->css rows cols)
-                                 (gap->css gap)
-                                 (place-items->css place-items)
-                                 (place-content->css place-content)
-                                 (auto-sizes->css auto-sizes)
-                                 (auto-flow->css auto-flow)
+  (let [grid-styles (into {}
+                      (remove (comp nil? val)
+                        (merge {:display "grid"}
+                               (areas->css areas)
+                               (rows+cols->css rows cols)
+                               (gap->css gap)
+                               (place-items->css place-items)
+                               (place-content->css place-content)
+                               (auto-sizes->css auto-sizes)
+                               (auto-flow->css auto-flow)
 
-                                 ;; custom overrides take over everything!
-                                 -style)))
+                               ;; custom overrides take over everything!
+                               -style)))
 
-          grid-area-names (->> (flatten areas)
-                            (filter keyword?)
-                            (into #{}))
-          grid-children   (->> grid-area-names
-                            (select-keys -props)
-                            (into []))]
+        grid-area-names (->> (flatten areas)
+                          (filter keyword?)
+                          (into #{}))
+        grid-children   (->> grid-area-names
+                          (select-keys -props)
+                          (into []))]
 
-      (into
-          [:div (merge {:class [(str "alpakit-grid-" id)]
-                        :style grid-styles}
-                  -attr)
-           [:style
-            (->> grid-children
-              (map first)
-              (map-indexed #(str ".alpakit-grid-" id "> *:nth-child(" (+ 2 %1) ") {grid-area: " (name %2) "}"))
-              (join "\n"))]]
+    (into
+        [:div (merge {:class [(str "alpakit-grid-" id)]
+                      :style grid-styles}
+                -attr)
+         [:style
+          (->> grid-children
+            (map first)
+            (map-indexed #(str ".alpakit-grid-" id "> *:nth-child(" (+ 2 %1) ") {grid-area: " (name %2) "}"))
+            (join "\n"))]]
 
-         (map second grid-children)))))
+       (map second grid-children))))
