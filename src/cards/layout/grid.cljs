@@ -4,32 +4,116 @@
     [alpakit.layout :refer [grid-layout]]))
 
 
-(defn box [color]
-  [:div {:style {:background-color color}} "..."])
+(defn box [color text]
+  [:div {:style {:background-color color}} text])
+
+(defcard-rg simple-grid
+  "
+    to define nice looking grid layouts, simply add named `:areas` and provide `:rows` and `:cols`
+  ```
+  :areas [[:A  :A  :C]
+          [:B  :B  :C]]
+  :cols [\"40px\" \"1fr\" \"1fr\"]
+  :rows [\"60px\" \"40px\"]
+
+  :A [...]
+  :B [...])
+  :C [...]])
+
+  ```
+
+  "
+  [grid-layout :areas [[:A  :A  :C]
+                       [:B  :B  :C]]
+               :cols ["40px" "1fr" "1fr"]
+               :rows ["60px" "40px"]
+
+               :A [box "#0086b3" "A"]
+               :B [box "gold" "B"]
+               :C [box "pink" "C"]])
+
+(defcard-rg simple-inline-grid
+  "
+    it's also possible to define `:rows` and/or `:cols` inside `:areas`
+  ```
+  :areas [\"40px\" \"1fr\" \"1fr\"
+          [:A    :A    :C] \"60px\"
+          [:B    :B    :C] \"40px\"]
+  ```
+
+  "
+  [grid-layout :areas ["40px" "1fr" "1fr"
+                       [:A    :A    :C] "60px"
+                       [:B    :B    :C] "40px"]
+
+               :A [box "#0086b3" "A"]
+               :B [box "gold" "B"]
+               :C [box "pink" "C"]])
+
 
 
 (defcard-rg header-menu-footer-layout
+  "
+  ```
+  :areas [\"1fr\"     \"1fr\"      \"1fr\"
+          [:header  :header   :header ] \"40px\"
+          [:menu    :content  :content] \"200px\"
+          [:menu    :content  :content] \"200px\"
+          [:footer  :footer   :footer ] \"40px\"]
+  ```
+
+  "
   [grid-layout :areas ["1fr"     "1fr"      "1fr"
                        [:header  :header   :header ] "40px"
                        [:menu    :content  :content] "200px"
                        [:menu    :content  :content] "200px"
                        [:footer  :footer   :footer ] "40px"]
 
-               :header  [box "blue"]
-               :content [box "gold"]
-               :menu    [box "pink"]
-               :footer [box "grey"]])
+               :header  [box "#0086b3" "header"]
+               :content [box "gold" "content"]
+               :menu    [box "pink" "menu"]
+               :footer  [box "brown" "footer"]])
+
+(defcard-rg layout-with-holes
+  "
+  set areas to `nil` to make great art!
+  ```
+  :areas [\"1fr\"     \"1fr\"      \"1fr\"
+          [:header  :header   :header ] \"40px\"
+          [:menu      nil       nil   ] \"200px\"
+          [nil        nil     :content] \"200px\"
+          [nil      :footer     nil   ] \"40px\"]
+
+  ```
+
+  "
+  [grid-layout :areas ["1fr"     "1fr"      "1fr"
+                       [:header  :header   :header ] "40px"
+                       [:menu      nil       nil   ] "200px"
+                       [nil        nil     :content] "200px"
+                       [nil      :footer     nil   ] "40px"]
+
+               :header  [box "#0086b3" "header"]
+               :content [box "gold" "content"]
+               :menu    [box "pink" "menu"]
+               :footer  [box "brown" "footer"]])
 
 
 (defcard-rg layout-with-gaps
+  "
+  to add gaps between rows and cols use the `:gap` prop
+  ```
+  :gap [\"20px\" \"50px\"]
+  ```
+  "
   [grid-layout  :gap ["20px" "50px"]
                 :areas ["1fr"     "1fr"      "1fr"
                         [:header  :header   :header ] "40px"
                         [:c0      :c1        :c2    ] "200px"
                         [:footer  :footer   :footer ] "40px"]
 
-                :header [box "blue"]
-                :c1     [box "red"]
-                :c2     [box "gold"]
-                :c0     [box "pink"]
-                :footer [box "grey"]])
+                :header [box "#0086b3" "header"]
+                :c1     [box "red" "c1"]
+                :c2     [box "gold" "c2"]
+                :c0     [box "pink" "c0"]
+                :footer [box "grey" "footer"]])
