@@ -122,6 +122,5 @@
                     ~@(deref-atom-access body (keys state)))))))))
 
 
-;; FIXME: how can I make this work in cljs? (without loading eval)
 (defmacro defwidget [name & spec]
-  (eval `(def ~(symbol name) (widget ~@spec))))
+  `(def ~(symbol name) (widget ~@spec)))
