@@ -4,7 +4,8 @@
 
     ;; cards
     [cards.widget]
-    [cards.layout.grid]))
+    [cards.layout.grid]
+    [cards.layout.flex]))
 
 (enable-console-print!)
 

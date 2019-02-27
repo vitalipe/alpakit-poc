@@ -77,6 +77,77 @@
 
 
 ;; widgets
+(defwidget flex-box
+  "`box` is a container which lays out its `children` in a single horizontal or vertical row.
+    you probably want to use `h-box` or `v-box`."
+
+    :props {justify      {:default :flex-start :spec #{:flex-start :flex-end :center :space-around :space-between :space-evenly}}
+            align        {:default :stretch    :spec #{:flex-start :flex-end :center :stretch :baseline}}
+            direction    {:default :row        :spec #{:row :column}}
+            wrap         {:default :nowrap     :spec #{:nowrap :wrap :wrap-reverse}}
+            reverse?     {:default false       :spec boolean?}
+
+            -attr       {:default {}     :spec props/html-attr-map}
+            -style      {:default {}     :spec props/css-style-map}}
+
+    (let [props (merge {:style (merge {:display "flex"
+                                       :flex-direction (if reverse?
+                                                         (str (name direction) "-reverse")
+                                                         (name direction))
+                                       :justify-content (name justify)
+                                       :align-items     (name align)
+                                       :flex-wrap       (name wrap)}
+
+                                      ;; custom style overrides take over!
+                                      -style)}
+                  ;; custom attr overrides take over!
+                  -attr)]
+      (into [:div props] children)))
+
+
+(defwidget h-box
+  "`h-box` is a `flex-box` wrapper which lays out its `children` in a single horizontal row."
+
+    :props {justify      {:default :flex-start :spec #{:flex-start :flex-end :center :space-around :space-between :space-evenly}}
+            align        {:default :stretch    :spec #{:flex-start :flex-end :center :stretch :baseline}}
+            wrap         {:default :nowrap     :spec #{:nowrap :wrap :wrap-reverse}}
+            reverse?     {:default false       :spec boolean?}
+
+            -attr       {:default {}     :spec props/html-attr-map}
+            -style      {:default {}     :spec props/css-style-map}}
+
+    (into [flex-box :direction :row
+                    :justify  justify
+                    :align    align
+                    :wrap     wrap
+                    :reverse? reverse?
+                    :-attr   -attr
+                    :-style   -style]
+
+          children))
+
+
+(defwidget v-box
+  "`v-box` is a `flex-box` wrapper which lays out its `children` in a single vertical row."
+
+    :props {justify      {:default :flex-start :spec #{:flex-start :flex-end :center :space-around :space-between :space-evenly}}
+            align        {:default :stretch    :spec #{:flex-start :flex-end :center :stretch :baseline}}
+            wrap         {:default :nowrap     :spec #{:nowrap :wrap :wrap-reverse}}
+            reverse?     {:default false       :spec boolean?}
+
+            -attr       {:default {}     :spec props/html-attr-map}
+            -style      {:default {}     :spec props/css-style-map}}
+
+    (into [flex-box :direction :column
+                    :justify  justify
+                    :align    align
+                    :wrap     wrap
+                    :reverse? reverse?
+                    :-attr   -attr
+                    :-style   -style]
+
+          children))
+
 
 (defwidget grid-layout
   "CSS grid layout"
