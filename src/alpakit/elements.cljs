@@ -1,7 +1,10 @@
 (ns alpakit.elements
   (:require
+    [clojure.set :as set]
+    [reagent.core :as r]
+
     [alpakit.widget :refer-macros [defwidget]]
-    [alpakit.css    :refer [css!]]
+    [alpakit.css    :as css]
     [alpakit.props :as props]))
 
 
@@ -16,7 +19,7 @@
           element     {:default :div   :spec keyword?}
           styles      {:default []     :spec seq?}}
 
-    (into [element (merge {:style -css :class (css! styles)} -attr)]
+    (into [element (merge {:style -css :class (css/css! styles)} -attr)]
           children))
 
 
@@ -87,3 +90,37 @@
 
                        ;; manual override
                        -attr)]))
+
+
+(defn style-sheet []
+  "style container element"
+  (let [my-id (random-uuid)
+        sync-styles! (fn [prv next sheet]
+                      (cond
+                        ;; at this point we don't really care about removing styles, only handle `reset!`
+                        (empty? next) (while (pos? (.. sheet -cssRules -length)) (.deleteRule sheet 0))
+                        :otherwise    (let [new-rules (select-keys
+                                                        next
+                                                        (set/difference
+                                                          (into #{} (keys next))
+                                                          (into #{} (keys prv))))]
+                                          (doall
+                                            (->> (vals new-rules)
+                                              (map :css)
+                                              (map #(.insertRule sheet %)))))))]
+
+    (r/create-class { :render (fn [] [:style.alpakit-css])
+                      :componentWillUnmount #(remove-watch css/registry my-id)
+                      :component-did-mount (fn [this]
+                                             (let [css-shit (.-sheet (r/dom-node this))]
+                                               ;; add all known styles
+                                               (doall
+                                                 (->> (vals @css/registry)
+                                                   (map :css)
+                                                   (map #(.insertRule css-shit %))))
+                                               ;; register sync
+                                               (add-watch
+                                                 css/registry
+                                                 my-id
+                                                 (fn [_ _ prv next]
+                                                   (sync-styles! prv next css-shit)))))})))
