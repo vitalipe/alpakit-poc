@@ -17,7 +17,8 @@
                  [org.clojure/clojurescript "1.10.520"]
                  [devcards "0.2.6"]
 
-                 [reagent "0.7.0"]]
+                 [reagent "0.7.0"]
+                 [garden "1.3.6"]]
 
 
   :plugins [[lein-figwheel "0.5.18"]
