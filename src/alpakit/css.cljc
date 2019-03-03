@@ -1,7 +1,7 @@
 (ns alpakit.css
   (:require
     [clojure.string :as string]
-    
+
     [garden.core :refer [css]]
     [alpakit.util :refer [map-vals]]))
 
@@ -45,7 +45,7 @@
 
 (defn css! [styles]
   "register css and return class names as a string"
-  (register-css! styles)
+  (register-css! (remove nil? styles))
   (->> styles
     (map :class-name)
     (string/join " ")))
