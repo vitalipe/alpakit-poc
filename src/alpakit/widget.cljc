@@ -2,42 +2,13 @@
   (:require
     #?(:cljs [cljs.spec.alpha :as spec])
     #?(:clj  [clojure.spec.alpha :as spec])
-    [reagent.core :as r]))
+    [reagent.core :as r]
+    [alpakit.util :refer [map-kv
+                          map-vals
+                          map-keys
+                          collect-kv-args
+                          collect-kv-args-into-props]]))
 
-
-
-;; util
-(defn collect-kv-args [arg-list]
-  "takes a seq of keyword args followed by n positional args
-   and returns a map and a vector (positional args).
-
-     for example:
-
-        [:x 42 :y false 1 2 3 4 5] => [{:x 42 :y false} [1 2 3 4 5]]
-        [1 2 3 4 5]                => [{} [1 2 3 4 5]]
-        [:x 42 :y false]           => [{:x 42 :y false} []]
-"
-  (let [rest-index (loop [[arg & other] arg-list index 0]
-                      (cond
-                        (keyword? arg) (recur (rest other) (+ 2 index))
-                        :otherwise     index))
-        kv-args   (apply hash-map (subvec (into [] arg-list) 0 rest-index))
-        rest-list (subvec (into [] arg-list) rest-index (count arg-list))]
-
-      [kv-args rest-list]))
-
-
-(defn collect-kv-args-into-props [arg-list defaults children-key]
-  "collect-kv into a map with defaults, useful for props+children"
-  (let [[props children] (collect-kv-args arg-list)]
-    (merge defaults props {:children (apply list children)})))
-
-
-(defn map-kv [k-fn v-fn a-map]
-  "map over a seq of [k v] pairs, returns a map"
-  (->> a-map
-    (map #(vector (k-fn (first %)) (v-fn (second %))))
-    (into {})))
 
 
 (defn deref-atom-access [body symbols]
@@ -59,13 +30,12 @@
   (let [[docstring {:keys [props state]} body] (if (string? (first spec)) ;; docstring?
                                                  (cons (first spec) (collect-kv-args (rest spec)))
                                                  (cons "" (collect-kv-args spec)))]
-    (let [state-specs  (->> state
-                         (map-kv keyword identity))
+    (let [state-specs  (map-keys keyword state)
           prop-defaults (->> props
                           (filter #(contains? (val %) :default))
                           (map-kv keyword :default))
 
-          prop-specs  (merge {:children (fn [& _] true)} (map-kv identity :spec props))
+          prop-specs  (merge {:children (fn [& _] true)} (map-vals :spec props))
           prop-names  (conj (keys props) (symbol "children"))
 
           arg-list-sym (gensym "arg-list")
@@ -79,7 +49,7 @@
              (list 'fn ['& arg-list-sym]
                docstring
                ;; children
-               `(let [{:keys [~@prop-names] :as ~(symbol "-props")} (collect-kv-args-into-props ~arg-list-sym {} :children)]
+               `(let [{:keys [~@prop-names] :as ~(symbol "-props")} (collect-kv-args-into-props ~arg-list-sym {})]
                   ~@body))
 
         no-state
@@ -87,8 +57,7 @@
                docstring
                ;;  props & children
                `(let [{:keys [~@prop-names] :as ~(symbol "-props")} (collect-kv-args-into-props ~arg-list-sym
-                                                                                                ~prop-defaults
-                                                                                                :children)]
+                                                                                                ~prop-defaults)]
                   ;; FIXME: fix in cljs  TODO make nice errors
                   ;(doseq [[~(symbol "p") ~(symbol "spec-info")] ~prop-specs]
                     ;(spec/assert ~(symbol "spec-info") ~(symbol "p"))
@@ -99,12 +68,12 @@
              (list 'fn ['& arg-list-sym]
               docstring
                ;; children
-               `(let [{:keys [~@prop-names] :as ~(symbol "-props")} (collect-kv-args-into-props ~arg-list-sym {} :children)]
+               `(let [{:keys [~@prop-names] :as ~(symbol "-props")} (collect-kv-args-into-props ~arg-list-sym {})]
                   ;; FIXME: fix in cljs TODO make nice errors
                   ;(doseq [[~(symbol "p") ~(symbol "spec-info")] ~prop-specs]
                     ;(spec/assert ~(symbol "spec-info") ~(symbol "p"))
                   ;; state
-                  (r/with-let [{:keys [~@(keys state)]} (map-kv identity r/atom ~state-specs)]
+                  (r/with-let [{:keys [~@(keys state)]} (map-vals r/atom ~state-specs)]
                     ~@(deref-atom-access body (keys state)))))
 
         :state+props
@@ -112,13 +81,12 @@
                docstring
                 ;; props & children
                `(let [{:keys [~@prop-names] :as ~(symbol "-props")} (collect-kv-args-into-props ~arg-list-sym
-                                                                                                ~prop-defaults
-                                                                                                :children)]
+                                                                                                ~prop-defaults)]
                   ;; FIXME: fix in cljs TODO make nice errors
                   ;(doseq [[~(symbol "p") ~(symbol "spec-info")] ~prop-specs]
                     ;(spec/assert ~(symbol "spec-info") ~(symbol "p"))
                      ;; state
-                  (r/with-let [{:keys [~@(keys state)]} (map-kv identity r/atom ~state-specs)]
+                  (r/with-let [{:keys [~@(keys state)]} (map-vals r/atom ~state-specs)]
                     ~@(deref-atom-access body (keys state)))))))))
 
 
