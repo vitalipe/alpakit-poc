@@ -115,7 +115,7 @@
                    :-css  -css
                    :styles (concat
                              [(->style {:background-color "#161922"
-                                        ;:padding    "15px"
+                                        :padding    "15px 5px"
 
                                         :border-color "#333d56"
                                         :border-style "solid"
