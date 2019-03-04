@@ -42,8 +42,8 @@
           value            {:default ""    :spec string?}
           placeholder      {:default ""    :spec string?}
 
-          auto-select-text? {:default false :spec boolean?}
-          blur-on-enter-key?  {:default true  :spec boolean?}
+          auto-select-text {:default false :spec boolean?}
+          blur-on-enter-key  {:default true  :spec boolean?}
 
           -attr {:default {}     :spec props/html-attr-map}
           -css  {:default {}     :spec props/css-style-map}
@@ -57,8 +57,8 @@
 
 
 
-  (let [controlled? (nil? on-change)]
-    (when-not controlled?
+  (let [controlled (nil? on-change)]
+    (when-not controlled
       ;; in uncontrolled mode, make sure that we override
       ;; `text` with `value` when a new value prop is set
       (when-not (= value* value)
@@ -70,22 +70,22 @@
              :-css -css
              :-attr (merge
                        { :type (name type)
-                         :value (if controlled? value text)
+                         :value (if controlled value text)
                          :placeholder placeholder
                          :disabled disabled
 
-                         :on-blur #(when-not controlled?
+                         :on-blur #(when-not controlled
                                      (reset! value* text)
                                      (on-change text))
 
                          :on-change #(let [v (.. % -target -value)]
-                                       (when-not controlled?
+                                       (when-not controlled
                                          (reset! text v))
                                        (on-edit v))}
 
-                       (when auto-select-text?
+                       (when auto-select-text
                          {:on-click #(.select (.-target %))})
-                       (when blur-on-enter-key?
+                       (when blur-on-enter-key
                          {:on-key-down #(when (= 13 (.-keyCode %)) (.blur (.-target %)))})
 
                        ;; manual override

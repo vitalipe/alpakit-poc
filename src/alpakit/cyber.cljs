@@ -26,8 +26,8 @@
             value            {:default ""    :spec string?}
             placeholder      {:default ""    :spec string?}
 
-            auto-select-text? {:default false :spec boolean?}
-            blur-on-enter-key?  {:default true  :spec boolean?}
+            auto-select-text {:default false :spec boolean?}
+            blur-on-enter-key  {:default true  :spec boolean?}
 
             -attr {:default {}     :spec props/html-attr-map}
             -css  {:default {}     :spec props/css-style-map}
@@ -40,8 +40,8 @@
                      :on-edit             on-edit
                      :value               value
                      :placeholder         placeholder
-                     :auto-select-text?   auto-select-text?
-                     :blur-on-enter-key?  blur-on-enter-key?
+                     :auto-select-text   auto-select-text
+                     :blur-on-enter-key  blur-on-enter-key
                      :-attr              -attr
                      :-css               -css
 
