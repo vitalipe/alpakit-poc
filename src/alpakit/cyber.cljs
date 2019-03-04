@@ -127,7 +127,7 @@
                                         :&>:first-child:before
                                         :&>:first-child:after
                                                              {:content   "\" \""
-                                                              :position "relative"
+                                                              :position "absolute"
                                                               :display   "block"
                                                               :width     "20px"
                                                               :height    "20px"
