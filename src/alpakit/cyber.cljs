@@ -16,8 +16,9 @@
 (defstyle cyber-border
   {:border (str "1px solid " "#2f3647")})
 
+
 (defwidget input-text
-    :props {disabled?   {:default false :spec boolean?}
+    :props {disabled   {:default false :spec boolean?}
 
             on-change {:default nil  :spec fn?}
             on-edit   {:default #()  :spec fn?}
@@ -34,7 +35,7 @@
             styles {:default []     :spec seq?}
             type   {:default :text  :spec #{:text :password :email}}}
 
-    [base/input-text :disabled?           disabled?
+    [base/input-text :disabled           disabled
                      :on-change           on-change
                      :on-edit             on-edit
                      :value               value
@@ -59,7 +60,7 @@
           icon  {:default nil :spec keyword?}
 
           type      {:default :normal :spec #{:normal}}
-          disabled? {:default false :spec boolean}
+          disabled {:default false :spec boolean}
 
           -attr {:default {}     :spec props/html-attr-map}
           -css  {:default {}     :spec props/css-style-map}
@@ -70,12 +71,12 @@
   [surface :element :button
            :-css -css
            :-attr  (merge
-                     {:disabled disabled?}
+                     {:disabled disabled}
                      ;; override
                      -attr)
 
            :styles (concat
-                     [(if disabled?
+                     [(if disabled
                         (->style {:cursor "not-allowed"
                                   :opacity ".65"})
                         (->style [:&:hover
@@ -109,48 +110,47 @@
 
           styles {:default []     :spec seq?}}
 
-  (let []
-    (into
-      [surface :-attr -attr
-                   :-css  -css
-                   :styles (concat
-                             [(->style {:background-color "#161922"
-                                        :padding    "15px 5px"
+  (into
+    [surface :-attr -attr
+                 :-css  -css
+                 :styles (concat
+                           [(->style {:background-color "#161922"
+                                      :padding    "15px 5px"
 
-                                        :border-color "#333d56"
-                                        :border-style "solid"
-                                        :border-width "1px"
+                                      :border-color "#333d56"
+                                      :border-style "solid"
+                                      :border-width "1px"
 
-                                        :position "relative"})
-                              (->style [:&:before
-                                        :&:after
-                                        :&>:first-child:before
-                                        :&>:first-child:after
-                                                             {:content   "\" \""
-                                                              :position "absolute"
-                                                              :display   "block"
-                                                              :width     "20px"
-                                                              :height    "20px"
-                                                              :border-color "#77809d"
-                                                              :border-style "solid"}])
-                              (->style
-                                    [:&:before {:top "-1px"
-                                                :left "-1px"
-                                                :border-width "1px 0 0 1px"}])
-                              (->style
-                                    [:&:after  {:top   "-1px"
-                                                :right "-1px"
-                                                :border-width "1px 1px 0 0"}])
-                              (->style
-                                    [:&>:first-child:before {:bottom "-1px"
-                                                             :right  "-1px"
-                                                             :border-width "0 1px 1px 0"}])
-                              (->style
-                                    [:&>:first-child:after {:bottom "-1px"
-                                                            :left "-1px"
-                                                            :border-width "0 0 1px 1px"}])]
+                                      :position "relative"})
+                            (->style [:&:before
+                                      :&:after
+                                      :&>:first-child:before
+                                      :&>:first-child:after
+                                                           {:content   "\" \""
+                                                            :position "absolute"
+                                                            :display   "block"
+                                                            :width     "20px"
+                                                            :height    "20px"
+                                                            :border-color "#77809d"
+                                                            :border-style "solid"}])
+                            (->style
+                                  [:&:before {:top "-1px"
+                                              :left "-1px"
+                                              :border-width "1px 0 0 1px"}])
+                            (->style
+                                  [:&:after  {:top   "-1px"
+                                              :right "-1px"
+                                              :border-width "1px 1px 0 0"}])
+                            (->style
+                                  [:&>:first-child:before {:bottom "-1px"
+                                                           :right  "-1px"
+                                                           :border-width "0 1px 1px 0"}])
+                            (->style
+                                  [:&>:first-child:after {:bottom "-1px"
+                                                          :left "-1px"
+                                                          :border-width "0 0 1px 1px"}])]
 
-                             styles)]
-      (concat
-        [[surface :css {:position "relative"}]]
-        children))))
+                           styles)]
+    (concat
+      [[surface :css {:position "relative"}]]
+      children)))

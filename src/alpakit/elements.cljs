@@ -34,7 +34,7 @@
     component is in uncontrolled mode.
   "
 
-  :props {disabled?   {:default false :spec boolean?}
+  :props {disabled   {:default false :spec boolean?}
 
           on-change {:default nil  :spec fn?}
           on-edit   {:default #()  :spec fn?}
@@ -72,7 +72,7 @@
                        { :type (name type)
                          :value (if controlled? value text)
                          :placeholder placeholder
-                         :disabled disabled?
+                         :disabled disabled
 
                          :on-blur #(when-not controlled?
                                      (reset! value* text)
