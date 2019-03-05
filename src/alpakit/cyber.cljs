@@ -143,7 +143,6 @@
 
                                 :color "rgb(190, 196, 232)"
                                 :text-transform "capitalize"
-                                :font-size "16px"
                                 :text-align "center"
 
                                 :padding-top    "5px"
