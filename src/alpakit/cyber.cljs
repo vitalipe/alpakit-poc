@@ -105,12 +105,13 @@
   :props {label     {:default ""  :spec string?}
           icon      {:default nil   :spec keyword?}
           gap       {:default "5px" :spec string?}
+          layout    {:default :label-right :spec #{:icon-left :icon-right :icon-top :icon-bottom
+                                                   :label-left :label-right :label-top :label-bottom}}
 
           type      {:default :normal :spec #{:normal}}
           on-click  {:default #()     :spec fn?}
 
           disabled  {:default false :spec boolean?}
-          reverse   {:default false :spec boolean?}
 
           -attr {:default {}     :spec props/html-attr-map}
           -css  {:default {}     :spec props/css-style-map}
@@ -122,7 +123,7 @@
            :-css -css
            :-attr -attr
            :disabled disabled
-           :reverse  reverse
+           :layout   layout
            :on-click on-click
            :label    label
            :icon     icon
@@ -199,7 +200,6 @@
                                                           :left "-1px"
                                                           :border-width "0 0 1px 1px"}])]
 
-                           styles)]
-    (concat
-      [[surface :css {:position "relative"}]]
-      children)))
+                           styles)
+
+     children]))

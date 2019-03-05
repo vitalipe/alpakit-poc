@@ -92,13 +92,14 @@
 
 
 (defwidget button
-  "buttons are clickable surface, and usually have a label and/or icon"
+  "buttons are clickable surfaces, and usually have a label and/or icon"
 
-  :props {label     {:default ""  :spec string?}
-          icon      {:default nil   :spec keyword?}
-          gap       {:default "5px" :spec string?}
+  :props {label    {:default ""  :spec string?}
+          icon     {:default nil   :spec keyword?}
+          layout   {:default :label-right :spec #{:icon-left :icon-right :icon-top :icon-bottom
+                                                  :label-left :label-right :label-top :label-bottom}}
+          gap      {:default "5px" :spec string?}
 
-          reverse   {:default :false :spec boolean?}
           disabled  {:default false :spec boolean?}
 
           on-click {:default #()  :spec fn?}
@@ -120,13 +121,28 @@
            :styles styles
 
           (cond
-            (and icon label) [layout/h-box :justify :center
-                                           :align   :baseline
-                                (if reverse label icon)
-                                [surface :-css {:display "inline" :padding gap}]
-                                (if reverse icon label)]
-            (nil? icon)       label
-            (nil? label)      icon)])
+            (nil? icon)          label
+            (empty? label)       icon
+            :both-icon-and-label (condp contains? layout
+                                   #{:icon-left
+                                     :icon-right
+                                     :label-left
+                                     :label-right} [layout/h-box :justify :center
+                                                                 :align   :baseline
+                                                                 :reverse (contains? #{:icon-right :label-left} layout)
+                                                      icon
+                                                      [surface :-css {:display "inline" :padding gap}]
+                                                      label]
+                                   #{:label-top
+                                     :label-bottom
+                                     :icon-top
+                                     :icon-bottom} [layout/v-box :justify :center
+                                                                 :align  :center
+                                                                 :reverse (contains? #{:icon-bottom :label-top} layout)
+                                                      icon
+                                                      [surface :-css {:display "inline" :padding gap}]
+                                                      label]))])
+
 
 
 (defn style-sheet []
