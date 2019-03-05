@@ -1,6 +1,8 @@
 (ns alpakit.elements
   (:require
     [clojure.set :as set]
+    [clojure.string :as string]
+
     [reagent.core :as r]
 
     [alpakit.widget :refer-macros [defwidget]]
@@ -143,6 +145,51 @@
                                                       [surface :-css {:display "inline" :padding gap}]
                                                       label]))])
 
+
+(defwidget text-icon
+  "handles all the nasty css crap behind the awosme material-design-iconic font icons :)
+   make sure that you load the css+font files (see http://zavoloklom.github.io).
+
+   for a complete icon list see: http://zavoloklom.github.io/material-design-iconic-font/icons.html
+   "
+    :props {name        {:default :coffee :spec keyword?}
+            size        {:default 1       :spec #{0.5 1 2 3 4 5}}
+            color       {:default nil     :spec string?}
+            effects     {:default #{}     :spec #{:spin :reverse-spin}}
+            transform   {:default #{}     :spec #{:fixed-width :rotate-90 :rotate-180 :rotate-270
+                                                  :flip-vertical :flip-horizontal}}
+
+            -attr {:default {}     :spec props/html-attr-map}
+            -css  {:default {}     :spec props/css-style-map}
+
+            styles {:default []     :spec seq?}}
+
+  [surface :element :i
+           :-css (merge {:color color} -css)
+           :-attr  (merge
+                     {:class (string/join " "
+                               ["zmdi"
+                                (str "zmdi-"  (clojure.core/name name))
+                                (case size
+                                  0.5 ""
+                                  1   "zmdi-hc-lg"
+                                  2   "zmdi-hc-2x"
+                                  3   "zmdi-hc-3x"
+                                  4   "zmdi-hc-4x"
+                                  5   "zmdi-hc-5x")
+
+                                (when (effects :spin)         "zmdi-hc-spin")
+                                (when (effects :reverse-spin) "zmdi-hc-spin-reverse")
+
+                                (when (transform :fixed-width) "zmdi-hc-fw")
+                                (when (transform :rotate-90) "zmdi-hc-rotate-90")
+                                (when (transform :rotate-180) "zmdi-hc-rotate-18")
+                                (when (transform :rotate-270) "zmdi-hc-rotate-270")
+
+                                (when (transform :flip-horizontal) "zmdi-hc-flip-horizontal")
+                                (when (transform :flip-vertical)   "zmdi-hc-flip-vertical")])}
+                     ;; override
+                     -attr)])
 
 
 (defn style-sheet []

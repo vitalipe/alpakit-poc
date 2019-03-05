@@ -1,7 +1,6 @@
 (ns alpakit.cyber
   (:require
     [clojure.set :as set]
-    [clojure.string :as string]
 
     [reagent.core :as r]
 
@@ -17,50 +16,6 @@
 
 (defstyle cyber-border
   {:border (str "1px solid " "#2f3647")})
-
-
-(defwidget text-icon
-    :props {name        {:default :steam-square :spec keyword?}
-            size        {:default 1             :spec #{0.5 1 2 3 4 5}}
-            color       {:default nil           :spec string?}
-            effects     {:default #{}           :spec #{:spin :reverse-spin}}
-            transform   {:default #{}           :spec #{:fixed-width :rotate-90 :rotate-180 :rotate-270
-                                                        :flip-vertical :flip-horizontal}}
-
-            -attr {:default {}     :spec props/html-attr-map}
-            -css  {:default {}     :spec props/css-style-map}
-
-            styles {:default []     :spec seq?}}
-
-  [surface :element :i
-           :-css (merge {:color color} -css)
-           :-attr  (merge
-
-                     {:class (string/join " "
-                               ["zmdi"
-                                (str "zmdi-"  (clojure.core/name name))
-                                (case size
-                                  0.5 ""
-                                  1   "zmdi-hc-lg"
-                                  2   "zmdi-hc-2x"
-                                  3   "zmdi-hc-3x"
-                                  4   "zmdi-hc-4x"
-                                  5   "zmdi-hc-5x")
-
-                                (when (effects :spin)         "zmdi-hc-spin")
-                                (when (effects :reverse-spin) "zmdi-hc-spin-reverse")
-
-                                (when (transform :fixed-width) "zmdi-hc-fw")
-                                (when (transform :rotate-90) "zmdi-hc-rotate-90")
-                                (when (transform :rotate-180) "zmdi-hc-rotate-18")
-                                (when (transform :rotate-270) "zmdi-hc-rotate-270")
-
-                                (when (transform :flip-horizontal) "zmdi-hc-flip-horizontal")
-                                (when (transform :flip-vertical)   "zmdi-hc-flip-vertical")])}
-
-                     ;; override
-                     -attr)])
-
 
 
 (defwidget input-text
@@ -160,46 +115,45 @@
 
           styles {:default []     :spec seq?}}
 
-  (into
-    [surface :-attr -attr
-                 :-css  -css
-                 :styles (concat
-                           [(->style {:background-color "#161922"
-                                      :padding    "15px 5px"
+  (->> children
+    (into
+      [surface :-attr -attr
+                   :-css  -css
+                   :styles (concat
+                             [(->style {:background-color "#161922"
+                                        :padding    "15px 5px"
 
-                                      :border-color "#333d56"
-                                      :border-style "solid"
-                                      :border-width "1px"
+                                        :border-color "#333d56"
+                                        :border-style "solid"
+                                        :border-width "1px"
 
-                                      :position "relative"})
-                            (->style [:&:before
-                                      :&:after
-                                      :&>:first-child:before
-                                      :&>:first-child:after
-                                                           {:content   "\" \""
-                                                            :position "absolute"
-                                                            :display   "block"
-                                                            :width     "20px"
-                                                            :height    "20px"
-                                                            :border-color "#77809d"
-                                                            :border-style "solid"}])
-                            (->style
-                                  [:&:before {:top "-1px"
-                                              :left "-1px"
-                                              :border-width "1px 0 0 1px"}])
-                            (->style
-                                  [:&:after  {:top   "-1px"
-                                              :right "-1px"
-                                              :border-width "1px 1px 0 0"}])
-                            (->style
-                                  [:&>:first-child:before {:bottom "-1px"
-                                                           :right  "-1px"
-                                                           :border-width "0 1px 1px 0"}])
-                            (->style
-                                  [:&>:first-child:after {:bottom "-1px"
-                                                          :left "-1px"
-                                                          :border-width "0 0 1px 1px"}])]
+                                        :position "relative"})
+                              (->style [:&:before
+                                        :&:after
+                                        :&>:first-child:before
+                                        :&>:first-child:after
+                                                             {:content   "\" \""
+                                                              :position "absolute"
+                                                              :display   "block"
+                                                              :width     "20px"
+                                                              :height    "20px"
+                                                              :border-color "#77809d"
+                                                              :border-style "solid"}])
+                              (->style
+                                    [:&:before {:top "-1px"
+                                                :left "-1px"
+                                                :border-width "1px 0 0 1px"}])
+                              (->style
+                                    [:&:after  {:top   "-1px"
+                                                :right "-1px"
+                                                :border-width "1px 1px 0 0"}])
+                              (->style
+                                    [:&>:first-child:before {:bottom "-1px"
+                                                             :right  "-1px"
+                                                             :border-width "0 1px 1px 0"}])
+                              (->style
+                                    [:&>:first-child:after {:bottom "-1px"
+                                                            :left "-1px"
+                                                            :border-width "0 0 1px 1px"}])]
 
-                           styles)
-
-     children]))
+                             styles)])))
