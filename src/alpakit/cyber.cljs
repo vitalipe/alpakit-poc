@@ -1,13 +1,15 @@
 (ns alpakit.cyber
   (:require
     [clojure.set :as set]
+    [clojure.string :as string]
+
     [reagent.core :as r]
 
     [alpakit.widget :refer-macros [defwidget]]
     [alpakit.css    :as css :refer [->style] :refer-macros [defstyle]]
     [alpakit.props :as props]
+    [alpakit.layout :as layout]
     [alpakit.elements :as base :refer [surface]]))
-
 
 
 (defstyle glow-on-focus
@@ -15,6 +17,50 @@
 
 (defstyle cyber-border
   {:border (str "1px solid " "#2f3647")})
+
+
+(defwidget text-icon
+    :props {name        {:default :steam-square :spec keyword?}
+            size        {:default 1             :spec #{0.5 1 2 3 4 5}}
+            color       {:default nil           :spec string?}
+            effects     {:default #{}           :spec #{:spin :reverse-spin}}
+            transform   {:default #{}           :spec #{:fixed-width :rotate-90 :rotate-180 :rotate-270
+                                                        :flip-vertical :flip-horizontal}}
+
+            -attr {:default {}     :spec props/html-attr-map}
+            -css  {:default {}     :spec props/css-style-map}
+
+            styles {:default []     :spec seq?}}
+
+  [surface :element :i
+           :-css (merge {:color color} -css)
+           :-attr  (merge
+
+                     {:class (string/join " "
+                               ["zmdi"
+                                (str "zmdi-"  (clojure.core/name name))
+                                (case size
+                                  0.5 ""
+                                  1   "zmdi-hc-lg"
+                                  2   "zmdi-hc-2x"
+                                  3   "zmdi-hc-3x"
+                                  4   "zmdi-hc-4x"
+                                  5   "zmdi-hc-5x")
+
+                                (when (effects :spin)         "zmdi-hc-spin")
+                                (when (effects :reverse-spin) "zmdi-hc-spin-reverse")
+
+                                (when (transform :fixed-width) "zmdi-hc-fw")
+                                (when (transform :rotate-90) "zmdi-hc-rotate-90")
+                                (when (transform :rotate-180) "zmdi-hc-rotate-18")
+                                (when (transform :rotate-270) "zmdi-hc-rotate-270")
+
+                                (when (transform :flip-horizontal) "zmdi-hc-flip-horizontal")
+                                (when (transform :flip-vertical)   "zmdi-hc-flip-vertical")])}
+
+                     ;; override
+                     -attr)])
+
 
 
 (defwidget input-text
@@ -56,11 +102,15 @@
 
 (defwidget button
 
-  :props {label {:default ""  :spec string?}
-          icon  {:default nil :spec keyword?}
+  :props {label     {:default ""  :spec string?}
+          icon      {:default nil   :spec keyword?}
+          gap       {:default "5px" :spec string?}
 
           type      {:default :normal :spec #{:normal}}
-          disabled {:default false :spec boolean}
+          on-click  {:default #()     :spec fn?}
+
+          disabled  {:default false :spec boolean?}
+          reverse   {:default false :spec boolean?}
 
           -attr {:default {}     :spec props/html-attr-map}
           -css  {:default {}     :spec props/css-style-map}
@@ -68,13 +118,15 @@
           styles {:default []     :spec seq?}}
 
 
-  [surface :element :button
+  [base/button
            :-css -css
-           :-attr  (merge
-                     {:disabled disabled}
-                     ;; override
-                     -attr)
-
+           :-attr -attr
+           :disabled disabled
+           :reverse  reverse
+           :on-click on-click
+           :label    label
+           :icon     icon
+           :gap      gap
            :styles (concat
                      [(if disabled
                         (->style {:cursor "not-allowed"
@@ -99,9 +151,7 @@
                                 :padding-left   "12px"
                                 :padding-right  "12px"})]
                      ;; override
-                     styles)
-        label])
-
+                     styles)])
 
 
 (defwidget cyber-panel
