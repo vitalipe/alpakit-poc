@@ -5,7 +5,8 @@
 
     [alpakit.widget :refer-macros [defwidget]]
     [alpakit.css    :as css]
-    [alpakit.props :as props]))
+    [alpakit.props :as props]
+    [alpakit.layout :as layout]))
 
 
 
@@ -55,8 +56,6 @@
   :state {value* value
           text   value}
 
-
-
   (let [controlled (nil? on-change)]
     (when-not controlled
       ;; in uncontrolled mode, make sure that we override
@@ -90,6 +89,44 @@
 
                        ;; manual override
                        -attr)]))
+
+
+(defwidget button
+  "buttons are clickable surface, and usually have a label and/or icon"
+
+  :props {label     {:default ""  :spec string?}
+          icon      {:default nil   :spec keyword?}
+          gap       {:default "5px" :spec string?}
+
+          reverse   {:default :false :spec boolean?}
+          disabled  {:default false :spec boolean?}
+
+          on-click {:default #()  :spec fn?}
+
+          -attr {:default {}     :spec props/html-attr-map}
+          -css  {:default {}     :spec props/css-style-map}
+
+          styles {:default []     :spec seq?}}
+
+
+  [surface :element :button
+           :-css -css
+           :-attr  (merge
+                     {:disabled disabled
+                      :on-click #(on-click)}
+                     ;; override
+                     -attr)
+
+           :styles styles
+
+          (cond
+            (and icon label) [layout/h-box :justify :center
+                                           :align   :baseline
+                                (if reverse label icon)
+                                [surface :-css {:display "inline" :padding gap}]
+                                (if reverse icon label)]
+            (nil? icon)       label
+            (nil? label)      icon)])
 
 
 (defn style-sheet []
