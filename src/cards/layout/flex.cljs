@@ -67,14 +67,14 @@
   you can reverse boxes
 
     ```
-    [h-box  :reverse? true
+    [h-box  :reverse true
      [child-one]
      [child-two]
      [child-three]]
     ```
 
   "
-   [h-box :reverse? true
+   [h-box :reverse true
     [box "gold" "child-one"]
     [box "pink" "child-two"]
     [box "brown" "child-three"]])

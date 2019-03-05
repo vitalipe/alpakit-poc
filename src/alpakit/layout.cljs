@@ -85,13 +85,13 @@
             align        {:default :stretch    :spec #{:flex-start :flex-end :center :stretch :baseline}}
             direction    {:default :row        :spec #{:row :column}}
             wrap         {:default :nowrap     :spec #{:nowrap :wrap :wrap-reverse}}
-            reverse?     {:default false       :spec boolean?}
+            reverse     {:default false       :spec boolean?}
 
             -attr       {:default {}     :spec props/html-attr-map}
             -style      {:default {}     :spec props/css-style-map}}
 
     (let [props (merge {:style (merge {:display "flex"
-                                       :flex-direction (if reverse?
+                                       :flex-direction (if reverse
                                                          (str (name direction) "-reverse")
                                                          (name direction))
                                        :justify-content (name justify)
@@ -111,7 +111,7 @@
     :props {justify      {:default :flex-start :spec #{:flex-start :flex-end :center :space-around :space-between :space-evenly}}
             align        {:default :stretch    :spec #{:flex-start :flex-end :center :stretch :baseline}}
             wrap         {:default :nowrap     :spec #{:nowrap :wrap :wrap-reverse}}
-            reverse?     {:default false       :spec boolean?}
+            reverse      {:default false       :spec boolean?}
 
             -attr       {:default {}     :spec props/html-attr-map}
             -style      {:default {}     :spec props/css-style-map}}
@@ -120,7 +120,7 @@
                     :justify  justify
                     :align    align
                     :wrap     wrap
-                    :reverse? reverse?
+                    :reverse reverse
                     :-attr   -attr
                     :-style   -style]
 
@@ -133,7 +133,7 @@
     :props {justify      {:default :flex-start :spec #{:flex-start :flex-end :center :space-around :space-between :space-evenly}}
             align        {:default :stretch    :spec #{:flex-start :flex-end :center :stretch :baseline}}
             wrap         {:default :nowrap     :spec #{:nowrap :wrap :wrap-reverse}}
-            reverse?     {:default false       :spec boolean?}
+            reverse     {:default false       :spec boolean?}
 
             -attr       {:default {}     :spec props/html-attr-map}
             -style      {:default {}     :spec props/css-style-map}}
@@ -142,7 +142,7 @@
                     :justify  justify
                     :align    align
                     :wrap     wrap
-                    :reverse? reverse?
+                    :reverse reverse
                     :-attr   -attr
                     :-style   -style]
 
