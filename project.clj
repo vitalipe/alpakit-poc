@@ -40,7 +40,11 @@
                                     :asset-path "js/compiled/devcards_out"
                                     :output-to  "resources/public/js/compiled/alpakit_devcards.js"
                                     :output-dir "resources/public/js/compiled/devcards_out"
-                                    :source-map-timestamp true}}
+                                    :source-map-timestamp true
+
+                                    :install-deps true
+                                    :npm-deps {"popper.js" "1.14.3"}}}
+
                        {:id "cards-prod"
                         :source-paths ["src"]
                         :compiler {:main       "cards.core"
