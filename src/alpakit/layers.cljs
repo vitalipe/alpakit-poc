@@ -9,26 +9,29 @@
 
 (defwidget popover-layer
   ""
-  :props {popover       {:default nil    :spec vector?}
-          anchor        {:default nil    :spec vector?}
-          showing       {:default true   :spec boolean?}
-          transform     {:default #{}    :spec #{:sync-width :sync-height}}
-          placement     {:default :left  :spec #{:left   :left-start   :left-end
-                                                 :right  :right-start  :right-end
-                                                 :top    :top-start    :top-end
-                                                 :bottom :bottom-start :bottom-end}}}
+  :props {popover       {:default nil     :spec vector?}
+          anchor        {:default nil     :spec vector?}
+          showing       {:default true    :spec boolean?}
+          transform     {:default #{}     :spec #{:sync-edges :no-flip}}
+          placement     {:default :left   :spec #{:left   :left-start   :left-end
+                                                  :right  :right-start  :right-end
+                                                  :top    :top-start    :top-end
+                                                  :bottom :bottom-start :bottom-end}}}
   (let [last-props  (atom -props)
         state       (atom {:anchor-dom  nil
                            :popover-dom nil
                            :handle      nil})
+        at-y-axis? #{:left :left-start :left-end :right :right-start :right-end}
         geom-sync! (fn [_]
                     (let [{:keys [anchor-dom popover-dom]} @state
-                          {transform :transform :or {transform #{}}} @last-props]
+                          {transform :transform
+                           placement :placement :or {transform #{}}} @last-props
+                          sync-dir (when (transform :sync-edges)
+                                      (if (at-y-axis? placement) :height :width))]
 
-                      (when (or (transform :sync-width) (transform :sync-height))
+                      (when (= sync-dir :width)
                         (let [bounds   (.getBoundingClientRect anchor-dom)
                               computed (js/getComputedStyle popover-dom)]
-                          (when (transform :sync-width)
                             (set!
                               (.. popover-dom -style -width)
                               (str
@@ -37,9 +40,11 @@
                                    (js/parseFloat (.-paddingRight computed))
                                    (js/parseFloat (.-borderLeft computed))
                                    (js/parseFloat (.-borderRight computed)))
-                                "px")))
+                                "px"))))
 
-                          (when (transform :sync-height)
+                      (when (= sync-dir :height)
+                        (let [bounds   (.getBoundingClientRect anchor-dom)
+                              computed (js/getComputedStyle popover-dom)]
                             (set!
                               (.. popover-dom -style -height)
                               (str
@@ -48,11 +53,13 @@
                                    (js/parseFloat (.-paddingBottom computed))
                                    (js/parseFloat (.-borderTop computed))
                                    (js/parseFloat (.-borderBottom computed)))
-                                "px")))))))
+                                "px"))))))
 
-        sync! (fn [{prv-place :placement prv-showing :showing} {place :placement showing :showing}]
+        sync! (fn [{prv-place :placement prv-showing :showing prv-transform :transform}
+                   {place :placement showing :showing transform :transform}]
                 (let [{:keys [anchor-dom popover-dom handle]} @state
-                      popper-config-changed (not= #{prv-place prv-showing} #{showing place})]
+                      popper-config-changed (not= #{prv-place prv-showing prv-transform}
+                                                  #{showing place transform})]
 
                   (when popper-config-changed
                     (when handle
@@ -67,6 +74,7 @@
                              anchor-dom
                              popover-dom
                              (clj->js {:placement (name place)
+                                       :modifiers {:flip {:enabled (not (contains? transform :no-flip))}}
                                        :onUpdate geom-sync!})))))))]
 
     (r/create-class {:reagent-render (fn [& {:keys [popover anchor]}]
