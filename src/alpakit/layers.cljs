@@ -7,6 +7,8 @@
     [popper.js :as popper]))
 
 
+
+
 (defwidget popover-layer
   ""
   :props {popover       {:default nil     :spec vector?}
@@ -17,6 +19,7 @@
                                                   :right  :right-start  :right-end
                                                   :top    :top-start    :top-end
                                                   :bottom :bottom-start :bottom-end}}}
+
   (let [last-props  (atom -props)
         state       (atom {:anchor-dom  nil
                            :popover-dom nil
@@ -61,12 +64,15 @@
                       popper-config-changed (not= #{prv-place prv-showing prv-transform}
                                                   #{showing place transform})]
 
+                  ;; toggle hidden
+                  (when (not= prv-showing showing) ;; minimize dom changes
+                    (set! (.. popover-dom -style -display) (if showing "" "none")))
+
+                  ;; update popper
                   (when popper-config-changed
                     (when handle
-                      (.destroy handle))
-
-                    (when (not= prv-showing showing) ;; minimize dom changes
-                      (set! (.. popover-dom -style -display) (if showing "" "none")))
+                      (.destroy handle)
+                      (swap! state assoc :handle nil))
 
                     (when showing
                       (swap! state assoc :handle
@@ -83,13 +89,16 @@
                                            anchor
                                            popover])
 
-                      :component-will-unmount (fn [_]
-                                                 (.destroy (:handle @state))
-                                                 (reset! state nil))
+                      :component-will-unmount (fn [this]
+                                                (when-let [handle (:handle @state)]
+                                                   (.destroy handle)
+                                                 (reset! state nil)))
 
                       :component-will-update (fn [_ [_ & {:as props}]]
                                               (sync! @last-props props)
-                                              (reset! last-props props)
+                                              (reset! last-props props))
+
+                      :component-did-update (fn [_]
                                               (geom-sync! nil))
 
                       :component-did-mount  (fn [this]
